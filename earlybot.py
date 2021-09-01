@@ -3,7 +3,7 @@ from selenium.webdriver.chrome.options import Options
 import discord
 from discord.ext import commands
 import requests
-import ast
+import re
 
 #headless, disable extensions, disable gpu, disable images
 chrome_options = Options()
@@ -22,22 +22,16 @@ Developed by @noone""")
 
 @bot.command()
 async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
-    try:
-        len(arg1) == 2
-    except:
+    if len(arg1) != 2:
         await ctx.channel.send("Region is incorrect")
-    
-    try:
-        len(arg2) > 5
-        len(arg2) < 60
-    except:
+        raise
+    if len(arg2) < 5 or len(arg2) > 60:
         await ctx.channel.send("Name is incorrect")
-
-    try:
-        len(arg3) > 1
-        len(arg3) < 5
-    except:
+        raise
+    if len(arg3) < 1 or len(arg3) > 4:
         await ctx.channel.send("Size is incorrect")
+        raise
+
 
 
     url = "https://www.nike.com/" + arg1 + "/launch/t/" + arg2.replace(" ", "-")
@@ -61,16 +55,24 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
         sizes = []
         for links in ilinks:
             a = requests.get(links)
-            b = ast.literal_eval(a.text)
-            subids = [e.get('productId') for c in b for d in c for e in d]
-            subsizes = [e.get('nikeSize') for c in b for d in c for e in d]
-            print(subids)
+            #b = ast.literal_eval(a.text)
+            #subids = [e.get('productId') for c in b for d in c for e in d]
+            #subsizes = [e.get('nikeSize') for c in b for d in c for e in d]
+            #subids = re.findall(r'productId" : "\w{8}-\w{4}-\w{4}-\w{4}-\w{12}',a.text,re.ASCII)
+            subsizes = [size.split('"')[2] for size in re.findall(r'nikeSize" : "\S{1,4}',a.text,re.ASCII)]
+            #print(subids)
             print(subsizes)
-            ids.append(subids)
-            sizes.append(subsizes)
-        print(ids)
-        print(sizes)
-        id = ids[sizes.index(arg3)]
+            #ids.append(subids)
+            #sizes.append(subsizes)
+            if arg3 in subsizes:
+                id = links.removeprefix("https://api.nike.com/merch/skus/v2/?filter=productId%28")
+                id = id.split("%",1)[0]
+                print(id)
+                break
+
+        #print(ids)
+        #print(sizes)
+        #id = ids[sizes.index(arg3)]
     else:
         id = ids[0]
 
@@ -96,7 +98,7 @@ async def help(ctx):
 
 
 #remove token later
-bot.run("")
+bot.run("ODgxNTUxNzM0Nzg1MzIzMDM4.YSufCA.ftsBX1KZ0BiSpFBGNm1AqPLl1WM")
 
 
 
