@@ -5,8 +5,6 @@ from discord.ext import commands
 import requests
 import re
 import os
-from time import perf_counter #log
-#import aiohttp
 
 #headless, disable extensions, disable gpu, disable images
 chrome_options = Options()
@@ -27,7 +25,6 @@ bot.run(os.environ['TOKEN'])
 
 @bot.command()
 async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
-    start = perf_counter() #log
     if len(arg1) != 2 or arg1.isascii() == False:
         await ctx.channel.send("Region is incorrect")
         raise
@@ -37,7 +34,6 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
     if len(arg3) < 1 or len(arg3) > 4 or arg3.isascii() == False:
         await ctx.channel.send("Size is incorrect")
         raise
-    stop_errorcheck = perf_counter() #log
     url = "https://www.nike.com/" + arg1 + "/launch/t/" + arg2.replace(" ", "-")
     driver.get(url)
     #Grab all items from network tab of google chrome developer tools into a list of dictionaries
@@ -48,7 +44,6 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
     ilinks = [name for name in names if name.startswith("https://api.nike.com/merch/skus/v2/?filter=productId%")]
     ilinks = list(set(ilinks))
     print(ilinks)
-    stop_selscrape = perf_counter() #log
     for links in ilinks:
         a = requests.get(links)
         subsizes = [size.split('"')[2] for size in re.findall(r'nikeSize" : "\S{1,4}',a.text,re.ASCII)]
@@ -62,14 +57,7 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
     except(UnboundLocalError):
         await ctx.channel.send("Size requested is not compatible with product")
         raise
-    stop_apiscrape = perf_counter() #log
     await ctx.channel.send(elink)
-    #log
-    await ctx.channel.send("""
-    Total time taken: {}s
-    Time taken for error prevention: {}s
-    Time taken for Selenium scrape: {}s
-    Time taken for api scrape: {}s""".format(stop_apiscrape - start, stop_errorcheck - start, stop_selscrape - stop_errorcheck, stop_apiscrape - stop_selscrape))
 
 @bot.command()
 async def ping(ctx):
