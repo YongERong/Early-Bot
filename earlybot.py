@@ -4,8 +4,9 @@ import discord
 from discord.ext import commands
 import requests
 import re
-
+import os
 from time import perf_counter #log
+#import aiohttp
 
 #headless, disable extensions, disable gpu, disable images
 chrome_options = Options()
@@ -18,6 +19,10 @@ chrome_options.add_argument('--blink-settings=imagesEnabled=false')
 driver = webdriver.Chrome('/usr/local/bin/chromedriver', options=chrome_options)
 bot = commands.Bot(command_prefix="?", help_command=None, description="""Listening on ?help
 Developed by @noone""")
+
+
+#remove token later
+bot.run(os.environ['TOKEN'])
 
 
 @bot.command()
@@ -63,7 +68,7 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
     await ctx.channel.send("""
     Total time taken: {}s
     Time taken for error prevention: {}s
-    Time taken for Selenium scrape:{}s
+    Time taken for Selenium scrape: {}s
     Time taken for api scrape: {}s""".format(stop_apiscrape - start, stop_errorcheck - start, stop_selscrape - stop_errorcheck, stop_apiscrape - stop_selscrape))
 
 @bot.command()
@@ -72,17 +77,12 @@ async def ping(ctx):
 
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed(title="Early Bot Help", description="Version 0.1.0", color = discord.Colour.random())
+    embed=discord.Embed(title="Early Bot Help", description="Version 0.3.0", color = discord.Colour.random())
     embed.add_field(name="```?snkrs <Region> <name in quotes or with dashes> <size>```",value="Command for Nike SNKRS early link",inline=False)
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
 
 
-  
-
-
-#remove token later
-bot.run("")
 
 
 
