@@ -15,6 +15,7 @@ chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument('--blink-settings=imagesEnabled=false')
 chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
+chrome_options.add_argument("--disable-dev-shm-usage")
 
 #on startup
 driver = webdriver.Chrome(os.environ['CHROMEDRIVER_PATH'], options=chrome_options)
