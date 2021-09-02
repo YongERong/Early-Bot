@@ -17,6 +17,7 @@ chrome_options.add_argument('--blink-settings=imagesEnabled=false')
 chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
 chrome_options.add_argument("--disable-dev-shm-usage")
 chrome_options.add_argument("--remote-debugging-port=9222")
+chrome_options.add_argument('--no-sandbox')
 
 #on startup
 driver = webdriver.Chrome(os.environ['CHROMEDRIVER_PATH'], options=chrome_options)
