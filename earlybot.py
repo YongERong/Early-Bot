@@ -5,22 +5,24 @@ from discord.ext import commands
 import requests
 import re
 import os
+from dotenv import load_dotenv
 
+load_dotenv()
 #headless, disable extensions, disable gpu, disable images
 chrome_options = Options()
 chrome_options.add_argument("--disable-extensions")
 chrome_options.add_argument("--disable-gpu")
 chrome_options.add_argument("--headless")
 chrome_options.add_argument('--blink-settings=imagesEnabled=false')
+chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
 
 #on startup
-driver = webdriver.Chrome('/usr/local/bin/chromedriver', options=chrome_options)
+driver = webdriver.Chrome(os.environ['CHROMEDRIVER_PATH'], options=chrome_options)
 bot = commands.Bot(command_prefix="?", help_command=None, description="""Listening on ?help
 Developed by @noone""")
 
 
-#remove token later
-bot.run(os.environ['TOKEN'])
+
 
 
 @bot.command()
@@ -65,14 +67,15 @@ async def ping(ctx):
 
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed(title="Early Bot Help", description="Version 0.3.0", color = discord.Colour.random())
+    embed=discord.Embed(title="Early Bot Help", description="Version 0.5.0", color = discord.Colour.random())
     embed.add_field(name="```?snkrs <Region> <name in quotes or with dashes> <size>```",value="Command for Nike SNKRS early link",inline=False)
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
 
 
 
-
+#remove token later
+bot.run(os.environ['TOKEN'])
 
 
 
