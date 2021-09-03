@@ -20,13 +20,9 @@ chrome_options.add_argument("--remote-debugging-port=9222")
 chrome_options.add_argument('--no-sandbox')
 
 #on startup
+activity = discord.Activity(type=discord.ActivityType.watching, name="?help")
 driver = webdriver.Chrome(os.environ['CHROMEDRIVER_PATH'], options=chrome_options)
-bot = commands.Bot(command_prefix="?", help_command=None, description="""Listening on ?help
-Developed by @noone""")
-
-
-
-
+bot = commands.Bot(command_prefix="?", activity=activity ,help_command=None)
 
 @bot.command()
 async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
@@ -75,11 +71,4 @@ async def help(ctx):
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
 
-
-
-#remove token later
 bot.run(os.environ['TOKEN'])
-
-
-
-
