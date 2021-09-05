@@ -56,7 +56,7 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
     try:
         elink = url + "?productId=" + id + "&size=" + arg3     
     except(UnboundLocalError):
-        await ctx.channel.send("Size requested is not compatible with product")
+        await ctx.channel.send("No product with matching name and size is found in that region")
         raise
     await ctx.channel.send(elink)
 
@@ -66,7 +66,7 @@ async def ping(ctx):
 
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed(title="Early Bot Help", description="Version 0.5.0", color = discord.Colour.random())
+    embed=discord.Embed(title="Early Bot Help", description="Version 1.0.0", color = discord.Colour.random())
     embed.add_field(name="```?snkrs <Region> <name in quotes or with dashes> <size>```",value="Command for Nike SNKRS early link",inline=False)
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
