@@ -66,8 +66,8 @@ async def ping(ctx):
 
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed(title="Early Bot Help", description="Version 1.0.1", color = discord.Colour.random())
-    embed.add_field(name="```?snkrs <Region> <Name in quotes or with dashes> < US size>```",value="Command for Nike SNKRS early link, size chart can be found [here](https://www.nike.com/sg/size-fit/mens-footwear)",inline=False)
+    embed=discord.Embed(title="Early Bot Help", description="Version 1.0.2", color = discord.Colour.from_rgb(255,255,255))
+    embed.add_field(name="```?snkrs <Region> <Product name with dashes> < US size>```",value="\nE.g. Link to the product is: ```https://www.nike.com/sg/launch/t/air-jordan-1-pollen``` and you want US size 9. The command will be: ```?snkrs sg air-jordan-pollen 9```\nCommand for Nike SNKRS early link, size chart can be found [here](https://www.nike.com/sg/size-fit/mens-footwear)",inline=False)
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
 
