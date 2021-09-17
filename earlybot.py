@@ -35,7 +35,10 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
     if len(arg3) < 1 or len(arg3) > 4 or arg3.isascii() == False:
         await ctx.channel.send("Size is incorrect")
         raise
-    url = "https://www.nike.com/" + arg1 + "/launch/t/" + arg2.replace(" ", "-")
+    if arg1 != "us":
+        url = "https://www.nike.com/" + arg1 + "/launch/t/" + arg2.replace(" ", "-")
+    else:
+        url = "https://www.nike.com/launch/t/" + arg2.replace(" ","-")
     driver.get(url)
     #Grab all items from network tab of google chrome developer tools into a list of dictionaries
     data = driver.execute_script("var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntries() || {}; return network;")
@@ -66,7 +69,7 @@ async def ping(ctx):
 
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed(title="Early Bot Help", description="Version 1.0.2", color = discord.Colour.from_rgb(255,255,255))
+    embed=discord.Embed(title="Early Bot Help", description="Version 1.0.3", color = discord.Colour.from_rgb(255,255,255))
     embed.add_field(name="```?snkrs <Region> <Product name with dashes> < US size>```",value="\nE.g. Link to the product is: ```https://www.nike.com/sg/launch/t/air-jordan-1-pollen``` and you want US size 9. The command will be: ```?snkrs sg air-jordan-pollen 9```\nCommand for Nike SNKRS early link, size chart can be found [here](https://www.nike.com/sg/size-fit/mens-footwear)",inline=False)
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
