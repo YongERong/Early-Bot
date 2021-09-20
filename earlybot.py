@@ -41,6 +41,7 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
         url = "https://www.nike.com/launch/t/" + arg2.replace(" ","-")
     driver.get(url)
     #Grab all items from network tab of google chrome developer tools into a list of dictionaries
+    print(driver.title)
     data = driver.execute_script("var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntries() || {}; return network;")
     #Get the name of every dictionary within the list of dictionary in a list
     names = [obj['name'] for obj in data]
