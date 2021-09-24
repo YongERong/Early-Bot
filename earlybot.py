@@ -43,6 +43,7 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
     #Grab all items from network tab of google chrome developer tools into a list of dictionaries
     print(driver.title)
     data = driver.execute_script("var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntries() || {}; return network;")
+    driver.delete_all_cookies()
     #Get the name of every dictionary within the list of dictionary in a list
     names = [obj['name'] for obj in data]
     #Product id links
@@ -70,7 +71,7 @@ async def ping(ctx):
 
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed(title="Early Bot Help", description="Version 1.0.3", color = discord.Colour.from_rgb(255,255,255))
+    embed=discord.Embed(title="Early Bot Help", description="Version 1.0.4", color = discord.Colour.from_rgb(255,255,255))
     embed.add_field(name="```?snkrs <Region> <Product name with dashes> < US size>```",value="\nE.g. Link to the product is: ```https://www.nike.com/sg/launch/t/air-jordan-1-pollen``` and you want US size 9. The command will be: ```?snkrs sg air-jordan-pollen 9```\nCommand for Nike SNKRS early link, size chart can be found [here](https://www.nike.com/sg/size-fit/mens-footwear)",inline=False)
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
