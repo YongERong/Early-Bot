@@ -1,28 +1,16 @@
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 import discord
 from discord.ext import commands
 import requests
-import re
+from bs4 import BeautifulSoup
 import os
 from dotenv import load_dotenv
 
 load_dotenv()
-#headless, disable extensions, disable gpu, disable images
-chrome_options = Options()
-chrome_options.add_argument("--disable-extensions")
-chrome_options.add_argument("--disable-gpu")
-chrome_options.add_argument("--headless")
-chrome_options.add_argument('--blink-settings=imagesEnabled=false')
-chrome_options.binary_location = os.environ['GOOGLE_CHROME_BIN']
-chrome_options.add_argument("--disable-dev-shm-usage")
-chrome_options.add_argument("--remote-debugging-port=9222")
-chrome_options.add_argument('--no-sandbox')
 
 #on startup
 activity = discord.Activity(type=discord.ActivityType.watching, name="?help")
-driver = webdriver.Chrome(os.environ['CHROMEDRIVER_PATH'], options=chrome_options)
 bot = commands.Bot(command_prefix="?", activity=activity ,help_command=None)
+header = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"}
 
 @bot.command()
 async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
@@ -39,25 +27,11 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
         url = "https://www.nike.com/" + arg1 + "/launch/t/" + arg2.replace(" ", "-")
     else:
         url = "https://www.nike.com/launch/t/" + arg2.replace(" ","-")
-    driver.get(url)
-    #Grab all items from network tab of google chrome developer tools into a list of dictionaries
-    print(driver.title)
-    data = driver.execute_script("var performance = window.performance || window.mozPerformance || window.msPerformance || window.webkitPerformance || {}; var network = performance.getEntries() || {}; return network;")
-    driver.delete_all_cookies()
-    #Get the name of every dictionary within the list of dictionary in a list
-    names = [obj['name'] for obj in data]
-    #Product id links
-    ilinks = [name for name in names if name.startswith("https://api.nike.com/merch/skus/v2/?filter=productId%")]
-    ilinks = list(set(ilinks))
-    print(ilinks)
-    for links in ilinks:
-        a = requests.get(links)
-        subsizes = [size.split('"')[2] for size in re.findall(r'nikeSize" : "\S{1,4}',a.text,re.ASCII)]
-        print(subsizes)
-        if arg3 in subsizes:
-            id = links.removeprefix("https://api.nike.com/merch/skus/v2/?filter=productId%28")
-            id = id.split("%",1)[0]
-            break
+    page = requests.get(url, headers=header)
+    soup = BeautifulSoup(page.text, "lxml")
+    idtag = soup.find("meta",{"name":"branch:deeplink:productId"})
+    id = idtag.get("content")
+
     try:
         elink = url + "?productId=" + id + "&size=" + arg3     
     except(UnboundLocalError):
@@ -71,7 +45,7 @@ async def ping(ctx):
 
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed(title="Early Bot Help", description="Version 1.0.4", color = discord.Colour.from_rgb(255,255,255))
+    embed=discord.Embed(title="Early Bot Help", description="Version 2.0.0", color = discord.Colour.from_rgb(255,255,255))
     embed.add_field(name="```?snkrs <Region> <Product name with dashes> < US size>```",value="\nE.g. Link to the product is: ```https://www.nike.com/sg/launch/t/air-jordan-1-pollen``` and you want US size 9. The command will be: ```?snkrs sg air-jordan-pollen 9```\nCommand for Nike SNKRS early link, size chart can be found [here](https://www.nike.com/sg/size-fit/mens-footwear)",inline=False)
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
