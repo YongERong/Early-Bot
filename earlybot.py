@@ -1,7 +1,6 @@
 import discord
 from discord.ext import commands
 import requests
-from bs4 import BeautifulSoup
 import os
 from dotenv import load_dotenv
 
@@ -11,6 +10,7 @@ load_dotenv()
 activity = discord.Activity(type=discord.ActivityType.watching, name="?help")
 bot = commands.Bot(command_prefix="?", activity=activity ,help_command=None)
 header = {"User-Agent":"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/94.0.4606.81 Safari/537.36"}
+reqSession = requests.Session()
 
 @bot.command()
 async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
@@ -27,14 +27,24 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
         url = "https://www.nike.com/" + arg1 + "/launch/t/" + arg2.replace(" ", "-")
     else:
         url = "https://www.nike.com/launch/t/" + arg2.replace(" ","-")
-    page = requests.get(url, headers=header)
-    soup = BeautifulSoup(page.text, "lxml")
-    idtag = soup.find("meta",{"name":"branch:deeplink:productId"})
-    id = idtag.get("content")
+    page = reqSession.get(url, headers=header)
 
     try:
-        elink = url + "?productId=" + id + "&size=" + arg3     
-    except(UnboundLocalError):
+        #Log title
+        title = page.text.split("</title>")[0].split('<title data-react-helmet="true">')[1]
+        print(title)
+        #try to obtain arrays of sizes and ids
+        workingText = page.text.split('"skus"')[1].split('"merchProductStatus"')[0]
+        sizeList = [size[0:4].split('"')[0] for size in workingText.split('"nikeSize":"')[1:]]
+        print(sizeList)
+        idList = [id[0:35] for id in workingText.split('"productId":"')[1:]]
+        print(idList)
+        reqSession.cookies.clear()
+        #try to form the early link
+        id = idList[sizeList.index(arg3)]
+        elink = url + "?productId=" + id + "&size=" + arg3   
+    #If index error due to lack of "skus" in webpage or unable to find matching size and product value
+    except(UnboundLocalError,ValueError,IndexError):
         await ctx.channel.send("No product with matching name and size is found in that region")
         raise
     await ctx.channel.send(elink)
