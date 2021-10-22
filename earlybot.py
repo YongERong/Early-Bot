@@ -41,11 +41,16 @@ async def snkrs(ctx:str, arg1:str, arg2:str, arg3:str):
         print(idList)
         reqSession.cookies.clear()
         #try to form the early link
-        id = idList[sizeList.index(arg3)]
-        elink = url + "?productId=" + id + "&size=" + arg3   
-    #If index error due to lack of "skus" in webpage or unable to find matching size and product value
-    except(UnboundLocalError,ValueError,IndexError):
-        await ctx.channel.send("No product with matching name and size is found in that region")
+        id = idList[sizeList.index(arg3.upper())]
+        elink = url + "?productId=" + id + "&size=" + arg3.upper()  
+    #index error is  due to lack of "skus" in webpage
+    #value error is due to inability find matching size and product value
+    #unbound local error is due to 'id' variable being unbound while appended in 'elink' (removed)
+    except(IndexError):
+        await ctx.channel.send("No product with matching name is found in that region")
+        raise
+    except(ValueError):
+        await ctx.channel.send("The product requested does not have such a size. \nThese are the available sizes for this product: " + ", ".join(sizeList))
         raise
     await ctx.channel.send(elink)
 
@@ -55,7 +60,7 @@ async def ping(ctx):
 
 @bot.command()
 async def help(ctx):
-    embed=discord.Embed(title="Early Bot Help", description="Version 2.0.0", color = discord.Colour.from_rgb(255,255,255))
+    embed=discord.Embed(title="Early Bot Help", description="Version 2.1.1", color = discord.Colour.from_rgb(255,255,255))
     embed.add_field(name="```?snkrs <Region> <Product name with dashes> < US size>```",value="\nE.g. Link to the product is: ```https://www.nike.com/sg/launch/t/air-jordan-1-pollen``` and you want US size 9. The command will be: ```?snkrs sg air-jordan-pollen 9```\nCommand for Nike SNKRS early link, size chart can be found [here](https://www.nike.com/sg/size-fit/mens-footwear)",inline=False)
     embed.add_field(name="```?ping```",value="Check if the bot is online",inline=False)
     await ctx.send(embed=embed)
